@@ -117,27 +117,53 @@ public class Main {
 	}
 	
 	public void ServiceCheck() throws IOException {
+		
+		String CKline;
+		
 		//確認服務
-		String CMD = "cmd /c sc query | find \"BranchCache\"";
+		String CMD = "cmd /c sc \\\\ 192.168.33.13 query | find \"Moon\"";
 		// 執行CMD指令
 		Process PS = Runtime.getRuntime().exec(CMD);
 		// Getting the results
 		PS.getOutputStream().close();
-		String CKline;
 		//將Service放入line
 		BufferedReader stdout = new BufferedReader(new InputStreamReader(PS.getInputStream()));
 		CKline = stdout.readLine();
-		//System.out.println("Standard Output:"+CKline);
+		System.out.println("Standard Output:"+CKline);
 		stdout.close();
+		
+		
+		if(CKline == null) {
+			
+			String Service = "Moon";
+			String NOut = "RC1 "+Service+" Stop \r\n";
+			System.out.println(NOut);
+			//開啟寫入txt
+			FileWriter NFW = new FileWriter("D:\\Service_Config.txt");
+			NFW.write(NOut);
+			NFW.close();
+		}
+		else {
+			String[] Oline = CKline.split(":");
+			String YOut = "RC1"+Oline[1]+" Running \r\n";
+			FileWriter YFW = new FileWriter("D:\\Service_Config.txt");
+			System.out.println(YOut);
+			YFW.write(YOut);
+			YFW.close();
+			
+		}
+		
+		
+		/*
 		//製作寫入.txt字串
 		String[] Oline = CKline.split(":");
 		//String Oline = "127.0.0.1 "+CKline+" Running ";
 		String Oline1 = "127.0.0.1"+Oline[1]+" Running \r\n";
-
+		
 		//寫入txt
 		FileWriter FW = new FileWriter("C:\\Users\\ejlin\\Desktop\\Service_Config.txt");
 		FW.write(Oline1);
-		FW.close();
+		FW.close();*/
 	}
 	
 	
@@ -146,7 +172,7 @@ public class Main {
 		
 		DefaultTableModel model = (DefaultTableModel) table.getModel();
 		//Import Service_Config.txt
-		FileReader FR = new FileReader("C:\\Users\\ejlin\\Desktop\\Service_Config.txt"); 
+		FileReader FR = new FileReader("D:\\Service_Config.txt"); 
 		str_vec.clear();//清除str_vec暫存
 		Date = null;
 		BufferedReader BR = new BufferedReader(FR);
